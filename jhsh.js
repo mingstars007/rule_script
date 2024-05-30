@@ -1,3 +1,4 @@
-const $ = new Env('建行生活提前点亮');
+const $ = new Env("建行生活提前点亮");
 let responseData = $response.body;
-$.msg($.name, 'responseData');
+$.msg($.name, responseData);
+responseData = JSON.parse(responseData);
