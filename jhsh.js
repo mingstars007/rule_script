@@ -5,27 +5,56 @@ let message = "";
 let isChange = false;
 if (responseData?.MSPS_ENTITY?.Coupon_NAME) {
   message += `活动名称：${responseData.MSPS_ENTITY.Coupon_NAME}\n`;
-  message += `活动总名额：${responseData.AVALIABLE_STOCK}\n`;
-  message += `活动剩余名额：${responseData.SURPLUS_STOCK}\n`;
-  if (responseData.SURPLUS_STOCK == 0) {
-    message += `活动已没有名额！固定改为1以点亮按钮！\n`;
-    responseData.SURPLUS_STOCK = 1;
+  message += `活动总名额：${responseData.MSPS_ENTITY.STOCK}\n`;
+  message += `活动剩余名额：${responseData.MSPS_ENTITY.Remain_Num}\n`;
+  if (responseData.MSPS_ENTITY.Remain_Num <= 0) {
+    message += `活动已没有名额！改为有名额以点亮按钮！\n`;
+    responseData.MSPS_ENTITY.Remain_Num = 1;
+    responseData.MSPS_ENTITY.EFFECT_PERIOD_START = "2024053015500";
+    responseData.MSPS_ENTITY.EFFECT_PERIOD_END = "20240530235959";
     isChange = true;
   }
-  message += `系统时间：${responseData.SYSTEM_TIME}\n`;
-  if (isTimeGreaterThanNow(responseData.SYSTEM_TIME)) {
-    message += `系统时间大于当前时间，已修改为延后10分钟！\n`;
-    responseData.SYSTEM_TIME = getTimeOffset(responseData.SYSTEM_TIME, 10, "minutes");
+  message += `活动时间：${responseData.MSPS_ENTITY.EFFECT_PERIOD_START}\n`;
+  if (isTimeGreaterThanNow(parseAndFormatTime(responseData.MSPS_ENTITY.EFFECT_PERIOD_START))) {
+    message += `当前时间早于活动时间，活动开始时间后1分钟！\n`;
+    responseData.SYSTEM_TIME = getTimeOffset(parseAndFormatTime(responseData.MSPS_ENTITY.EFFECT_PERIOD_START), 1);
     isChange = true;
   }
   if (isChange) {
-    $.done({ body: (response.data = responseData) });
     $.msg($.name, message);
+    response.data = responseData;
+    $.done({ body: JSON.stringify(response) });
     return;
   }
 }
 $.done();
 $.msg($.name, message);
+
+function parseAndFormatTime(timeStr) {
+  // 检查输入格式是否正确
+  if (timeStr.length !== 14 || isNaN(timeStr)) {
+    throw new Error("Invalid time format");
+  }
+
+  // 解析时间字符串
+  const year = timeStr.slice(0, 4);
+  const month = timeStr.slice(4, 6);
+  const day = timeStr.slice(6, 8);
+  const hours = timeStr.slice(8, 10);
+  const minutes = timeStr.slice(10, 12);
+  const seconds = timeStr.slice(12, 14);
+
+  // 创建 Date 对象
+  const parsedDate = new Date(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}`);
+
+  // 格式化为标准格式
+  const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+  return {
+    parsedDate,
+    formattedDate
+  };
+}
 
 function isTimeGreaterThanNow(date) {
   const currentTime = new Date();
