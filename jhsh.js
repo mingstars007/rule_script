@@ -27,6 +27,21 @@ if (responseData?.MSPS_ENTITY?.Coupon_NAME) {
     $.done({ body: JSON.stringify(response) });
     return;
   }
+} else if (responseData?.KHHK_ENTITY?.DcCp_Avy_Nm) {
+  message += `活动名称：${responseData.KHHK_ENTITY.DcCp_Avy_Nm}\n`;
+  message += `活动总名额：${responseData.MSPS_ENTITY.DcCp_Issu_Num}\n`;
+  message += `活动剩余名额：${responseData.MSPS_ENTITY.Rvl_Rcrd_Num}\n`;
+  if (responseData.MSPS_ENTITY.Rvl_Rcrd_Num <= 0) {
+    message += `活动已没有名额！改为有名额以点亮按钮！\n`;
+    responseData.MSPS_ENTITY.Rvl_Rcrd_Num = 1;
+    isChange = true;
+  }
+  if (isChange) {
+    $.msg($.name, message);
+    response.data = responseData;
+    $.done({ body: JSON.stringify(response) });
+    return;
+  }
 }
 $.done();
 $.msg($.name, message);
