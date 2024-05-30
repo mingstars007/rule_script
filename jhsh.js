@@ -20,6 +20,7 @@ if (responseData?.MSPS_ENTITY?.Coupon_NAME) {
   }
   if (isChange) {
     $.done({ body: (response.data = responseData) });
+    $.msg($.name, message);
     return;
   }
 }
