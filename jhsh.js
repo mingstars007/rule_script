@@ -1,7 +1,13 @@
 const $ = new Env("建行生活提前点亮");
-let responseData = $response.body;
-$.msg($.name, responseData);
-responseData = JSON.parse(responseData);
+let responseData = JSON.parse($response.body)?.data;
+let message = "";
+if (responseData?.MSPS_ENTITY?.Coupon_NAME) {
+  message += `活动名称：${responseData.MSPS_ENTITY.Coupon_NAME}\n`;
+  message += `活动总名额：${responseData.AVALIABLE_STOCK}\n`;
+  message += `活动剩余名额：${responseData.SURPLUS_STOCK}\n`;
+  $.msg($.name, message);
+}
+$.done();
 
 
 // prettier-ignore
