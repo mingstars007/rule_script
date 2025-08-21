@@ -2,7 +2,7 @@
 http-response ^https:\/\/dm\.video\.qq\.com\/.* requires-body=true,binary-body-mode=true,script-path=https://raw.githubusercontent.com/mingstars007/rule_script/master/txsp.js, tag=腾讯视频
 
 [MITM]
-hostname = api.m.jd.com
+hostname = dm.video.qq.com
 
 // startKeys 是你想删除的关键字数组
 const startKeys = ["宇", "星"];
